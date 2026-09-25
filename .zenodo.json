@@ -5,5 +5,5 @@
   "description": "Dual-invariant drift-detection system combining Tusi-couple geometry and daemon-gate coherence.",
   "keywords": ["invariant", "drift", "geometry", "cryptographic sealing"],
   "license": "MIT",
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

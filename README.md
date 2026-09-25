@@ -20,3 +20,11 @@ python -m blueprint_invariant.pipeline   # builds release/ bundle
 periodic → environmental → **null** · secular → **candidate** · source flip → **invalid**
 
 See `docs/TECHNICAL_DATA.md`, `docs/REPLICATION_PROTOCOL.md` and `docs/compliance_report_template.json`. Licence: MIT.
+
+## v1.0.2: signed seals and calibrated detector
+```bash
+pip install -e ".[signing]" pytest
+export SENTINEL_DOT_SIGNING_KEY=writer.key   # sentinel_dot keygen --ed25519 writer
+python -m blueprint_invariant.pipeline      # writes sentinel_sig.txt + signer.pub
+```
+Classification is now `null` / `candidate` / `inconclusive` / `invalid` from `classify_drift` (HAC trend test + KPSS). See `docs/RELEASE_NOTES_v1.0.2.md` for adversarial results and limits.
