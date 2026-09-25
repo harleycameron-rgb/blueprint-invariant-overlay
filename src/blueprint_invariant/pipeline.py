@@ -16,14 +16,19 @@ def render(path):
     t = np.linspace(0, 2*np.pi, 800)
     ax.plot(2.1*np.cos(t), 2.1*np.sin(t), color="#ffd484", lw=1.2, ls="--")
     for k, rr in enumerate(orrery.radial_partitions()):
-        ax.plot(2*rr*np.cos(t), 2*rr*np.sin(t), color="#d4b8ff", lw=.8, alpha=.8-k*.08)
+        ax.plot(2*rr*np.cos(t), 2*rr*np.sin(t), color="#8a93b8", lw=.6, alpha=.6-k*.06)
     for i, a in enumerate(np.linspace(0, 2*np.pi, 12, endpoint=False)):
-        ax.plot([0, 2*np.cos(a)], [0, 2*np.sin(a)], color="#d4b8ff", lw=.4, alpha=.5)
+        ax.plot([0, 2*np.cos(a)], [0, 2*np.sin(a)], color="#8a93b8", lw=.4, alpha=.4)
         ax.text(2.25*np.cos(a), 2.25*np.sin(a), f"{i:02d}", color="#ffd484", family="monospace", ha="center", va="center", fontsize=9)
     for a in np.linspace(0, 2*np.pi, orrery.DIALS, endpoint=False):
         ax.plot([1.92*np.cos(a), 2*np.cos(a)], [1.92*np.sin(a), 2*np.sin(a)], color="#9fd0ff", lw=.3)
-    for ph in np.linspace(0, np.pi, 12, endpoint=False):
-        x, _ = orrery.tusi_position(t); ax.plot(x*np.cos(ph), x*np.sin(ph), color="#d4b8ff", lw=.5)
+    # Tusi couples: inner circle r=1 rolling inside R=2 (A), second couple at ratio 1.37 (B)
+    for k, ph in enumerate([0.6, 0.6*orrery.RATIO]):
+        cx, cy = np.cos(ph), np.sin(ph); col = "#d4b8ff" if k == 0 else "#ffd484"
+        ax.plot(cx+np.cos(t), cy+np.sin(t), color=col, lw=1.6)
+        x, _ = orrery.tusi_position(ph); ax.plot(x, 0, "o", color=col, ms=7)
+        ax.plot([-2, 2], [0, 0], color=col, lw=1.2, alpha=.7) if k == 0 else None
+        ax.plot([0, cx], [0, cy], color=col, lw=1.0)
     ax.set_aspect("equal"); fig.savefig(path, dpi=150, facecolor=fig.get_facecolor()); plt.close(fig)
 def build_release(out="release", root="."):
     out, root = pathlib.Path(out), pathlib.Path(root); out.mkdir(exist_ok=True)
