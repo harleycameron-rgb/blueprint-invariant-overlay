@@ -39,14 +39,20 @@ def build_release(out="release", root="."):
     (out/"blueprint.svc").write_text(json.dumps(svc.build_svc(img, ihb, seal), indent=2))
     src = root/"src/blueprint_invariant"
     for f in ("orrery.py", "daemon_gate.py"): shutil.copy(src/f, out/f)
+    shutil.copytree(src, out/"src/blueprint_invariant", dirs_exist_ok=True,
+                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    for f in ("pyproject.toml", "LICENSE", "CITATION.cff"):
+        if (root/f).exists(): shutil.copy(root/f, out/f)
+    (out/"docs").mkdir(exist_ok=True)
+    for f in root.joinpath("docs").iterdir(): shutil.copy(f, out/"docs"/f.name)
     shutil.copytree(root/"validation_suite", out/"validation_suite", dirs_exist_ok=True,
-                    ignore=shutil.ignore_patterns("__pycache__"))
+                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".pytest_cache"))
     for f in root.joinpath("docs").glob("*.md"): shutil.copy(f, out/f.name)
     shutil.copy(root/"README.md", out/"README.md")
     shutil.copy(root/"docs/compliance_report_template.json", out/"compliance_report_template.json")
-    files = sorted(p for p in out.rglob("*") if p.is_file() and p.name not in ("manifest.json", "package_sha256.txt"))
+    files = sorted(p for p in out.rglob("*") if p.is_file() and "__pycache__" not in p.parts and p.name not in ("manifest.json", "package_sha256.txt"))
     man = {str(p.relative_to(out)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
-    (out/"manifest.json").write_text(json.dumps({"version": "1.0.0", "classification": cls, "files": man}, indent=2))
+    (out/"manifest.json").write_text(json.dumps({"version": "1.0.1", "classification": cls, "files": man}, indent=2))
     pk = hashlib.sha256((out/"manifest.json").read_bytes()).hexdigest()
     (out/"package_sha256.txt").write_text(pk+"\n"); return out, seal, pk, cls
 if __name__ == "__main__":

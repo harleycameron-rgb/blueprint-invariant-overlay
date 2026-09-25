@@ -1,7 +1,7 @@
 """SVC metadata wrapper binding blueprint image to IHB."""
 import hashlib
 from .orrery import RATIO, DIALS, radial_partitions
-def build_svc(image_bytes, ihb, sentinel, version="1.0.0"):
+def build_svc(image_bytes, ihb, sentinel, version="1.0.1"):
     return {"format": "SVC/1", "version": version,
             "geometry": {"frame": "tusi_couple", "ratio": RATIO, "dials": DIALS, "partitions": radial_partitions()},
             "invariants": {k: ihb[k] for k in ("H", "closure", "ring_count")},

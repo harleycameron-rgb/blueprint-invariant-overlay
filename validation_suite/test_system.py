@@ -23,10 +23,12 @@ def test_reproducible_seal_and_tamper():
 def test_device_changes_seal():
     s, v = pl.synthetic(512); assert pl.measure(s, v, "A")[1] != pl.measure(s, v, "B")[1]
 def test_release_bundle(tmp_path):
-    import pathlib; root = pathlib.Path(__file__).resolve().parents[1]
+    import pathlib, pytest; root = pathlib.Path(__file__).resolve().parents[1]
+    if not (root/"src/blueprint_invariant").is_dir() or (root/"docs").resolve() == (tmp_path/"rel"/"docs").resolve():
+        pytest.skip("needs source tree")
     out, seal, pk, cls = pl.build_release(tmp_path/"rel", root)
     for f in ["blueprint.jpeg", "blueprint.svc", "invariant_hash_block.json", "sentinel_sha256.txt",
-              "orrery.py", "daemon_gate.py", "manifest.json", "package_sha256.txt", "README.md"]:
+              "orrery.py", "daemon_gate.py", "src/blueprint_invariant/pipeline.py", "pyproject.toml", "manifest.json", "package_sha256.txt", "README.md"]:
         assert (out/f).exists(), f
     ihb = json.loads((out/"invariant_hash_block.json").read_text()); assert sd.verify(ihb, seal)
     assert cls == "null"
