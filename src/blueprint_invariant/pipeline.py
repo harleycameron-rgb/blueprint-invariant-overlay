@@ -7,7 +7,7 @@ def synthetic(n=4096, dt=60.0, drift=0.0, seed=0):
     v[:, 1] += drift*s/s[-1]; return s, v + 0.01*r.standard_normal(v.shape)
 def measure(s, v, device="device-A", ts="2026-01-01T00:00:00Z"):
     G = g.run_gate(v); T = orrery.tusi_trace(s); D = d.differential(G["coherence"], T)
-    R = d.remove_periodic(s, D); f, P = d.residual_spectrum(R, s[1]-s[0])
+    R = d.remove_periodic(s, D, list(d.FACILITY_PERIODS.values()) + [86400.0/orrery.RATIO]); f, P = d.residual_spectrum(R, s[1]-s[0])
     ihb = ih.build_ihb(T, G["coherence"], D, P, G["H"], G["closure"], len(G["rings"]), ts, device)
     return ihb, sd.seal(ihb), d.classify(s, R)
 def render(path):

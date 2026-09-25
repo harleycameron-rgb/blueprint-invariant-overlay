@@ -30,3 +30,8 @@ def test_release_bundle(tmp_path):
         assert (out/f).exists(), f
     ihb = json.loads((out/"invariant_hash_block.json").read_text()); assert sd.verify(ihb, seal)
     assert cls == "null"
+def test_pipeline_flags_injected_drift():
+    # secular decoherence: gate noise grows linearly across the run
+    s, v = pl.synthetic(4096); r = np.random.default_rng(1)
+    v = v + (0.2*s/s[-1])[:, None]*r.standard_normal(v.shape)
+    assert pl.measure(s, v)[2] == "candidate"

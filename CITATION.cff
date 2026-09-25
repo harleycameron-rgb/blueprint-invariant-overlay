@@ -1,3 +1,10 @@
 cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
 title: Blueprint Invariant Overlay
 version: 1.0.0
+license: MIT
+authors:
+  - family-names: Cameron
+    given-names: Harley
+    affiliation: "Welshpool, Wales, UK"
+# doi: add after Zenodo mints it
