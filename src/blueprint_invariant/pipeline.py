@@ -14,12 +14,16 @@ def render(path):
     import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
     fig, ax = plt.subplots(figsize=(8, 8), facecolor="#0b1020"); ax.set_facecolor("#0b1020"); ax.axis("off")
     t = np.linspace(0, 2*np.pi, 800)
+    ax.plot(2.1*np.cos(t), 2.1*np.sin(t), color="#ffd484", lw=1.2, ls="--")
     for k, rr in enumerate(orrery.radial_partitions()):
-        ax.plot(2*rr*np.cos(t), 2*rr*np.sin(t), color="#6fb3ff", lw=.8, alpha=.8-k*.08)
+        ax.plot(2*rr*np.cos(t), 2*rr*np.sin(t), color="#d4b8ff", lw=.8, alpha=.8-k*.08)
+    for i, a in enumerate(np.linspace(0, 2*np.pi, 12, endpoint=False)):
+        ax.plot([0, 2*np.cos(a)], [0, 2*np.sin(a)], color="#d4b8ff", lw=.4, alpha=.5)
+        ax.text(2.25*np.cos(a), 2.25*np.sin(a), f"{i:02d}", color="#ffd484", family="monospace", ha="center", va="center", fontsize=9)
     for a in np.linspace(0, 2*np.pi, orrery.DIALS, endpoint=False):
         ax.plot([1.92*np.cos(a), 2*np.cos(a)], [1.92*np.sin(a), 2*np.sin(a)], color="#9fd0ff", lw=.3)
     for ph in np.linspace(0, np.pi, 12, endpoint=False):
-        x, _ = orrery.tusi_position(t); ax.plot(x*np.cos(ph), x*np.sin(ph), color="#ffcc66", lw=.5)
+        x, _ = orrery.tusi_position(t); ax.plot(x*np.cos(ph), x*np.sin(ph), color="#d4b8ff", lw=.5)
     ax.set_aspect("equal"); fig.savefig(path, dpi=150, facecolor=fig.get_facecolor()); plt.close(fig)
 def build_release(out="release", root="."):
     out, root = pathlib.Path(out), pathlib.Path(root); out.mkdir(exist_ok=True)
@@ -34,6 +38,7 @@ def build_release(out="release", root="."):
                     ignore=shutil.ignore_patterns("__pycache__"))
     for f in root.joinpath("docs").glob("*.md"): shutil.copy(f, out/f.name)
     shutil.copy(root/"README.md", out/"README.md")
+    shutil.copy(root/"docs/compliance_report_template.json", out/"compliance_report_template.json")
     files = sorted(p for p in out.rglob("*") if p.is_file() and p.name not in ("manifest.json", "package_sha256.txt"))
     man = {str(p.relative_to(out)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     (out/"manifest.json").write_text(json.dumps({"version": "1.0.0", "classification": cls, "files": man}, indent=2))

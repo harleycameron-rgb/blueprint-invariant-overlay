@@ -1,0 +1,52 @@
+{
+  "facility": {
+    "name": "",
+    "location": "",
+    "environmental_log_reference": ""
+  },
+  "operators": {
+    "inside_ring": "",
+    "outside_ring": ""
+  },
+  "run_parameters": {
+    "start_utc": "",
+    "end_utc": "",
+    "duration_days": 0,
+    "cryogenic_cycle_observed": true,
+    "diurnal_cycle_observed": true
+  },
+  "invariants": {
+    "H_inside": [],
+    "H_outside": [],
+    "closure_inside": [],
+    "closure_outside": [],
+    "ring_count_inside": [],
+    "ring_count_outside": []
+  },
+  "coherence": {
+    "tusi_trace_hash": "",
+    "gate_trace_hash_inside": "",
+    "gate_trace_hash_outside": "",
+    "delta_trace_hash_inside": "",
+    "delta_trace_hash_outside": ""
+  },
+  "residuals": {
+    "periodic_terms_removed": true,
+    "residual_spectrum_hash_inside": "",
+    "residual_spectrum_hash_outside": ""
+  },
+  "classification": {
+    "inside": "periodic | secular | invalid",
+    "outside": "periodic | secular | invalid"
+  },
+  "cryptographic": {
+    "IHB_hash_inside": "",
+    "IHB_hash_outside": "",
+    "sentinel_dot_hash_inside": "",
+    "sentinel_dot_hash_outside": ""
+  },
+  "result": {
+    "status": "null | candidate | invalid",
+    "notes": ""
+  }
+}
