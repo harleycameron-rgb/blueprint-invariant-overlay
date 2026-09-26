@@ -4,5 +4,10 @@ build-backend="setuptools.build_meta"
 
 [project]
 name="blueprint-invariant-overlay"
-version="1.0.1"
+version="1.0.2"
 dependencies = ["numpy", "matplotlib"]
+
+[project.optional-dependencies]
+signing = ["sentinel_dot[ed25519] @ git+https://github.com/harleycameron-rgb/sentinel_dot@v0.3.0"]
+pq = ["sentinel_dot[pq] @ git+https://github.com/harleycameron-rgb/sentinel_dot@v0.3.0"]
+anchor = ["sentinel_dot[all] @ git+https://github.com/harleycameron-rgb/sentinel_dot@v0.3.0"]

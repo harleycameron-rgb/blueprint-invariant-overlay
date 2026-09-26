@@ -6,10 +6,15 @@ def synthetic(n=4096, dt=60.0, drift=0.0, seed=0):
     v = np.c_[np.ones(n), 0.05*np.sin(2*np.pi*s/86400), 0.05*np.cos(2*np.pi*s/3600)]
     v[:, 1] += drift*s/s[-1]; return s, v + 0.01*r.standard_normal(v.shape)
 def measure(s, v, device="device-A", ts="2026-01-01T00:00:00Z"):
+    d.validate(s, v)
     G = g.run_gate(v); T = orrery.tusi_trace(s); D = d.differential(G["coherence"], T)
     R = d.remove_periodic(s, D, list(d.FACILITY_PERIODS.values()) + [86400.0/orrery.RATIO]); f, P = d.residual_spectrum(R, s[1]-s[0])
     ihb = ih.build_ihb(T, G["coherence"], D, P, G["H"], G["closure"], len(G["rings"]), ts, device)
-    return ihb, sd.seal(ihb), d.classify(s, R)
+    det = d.classify_drift(s, v, list(d.FACILITY_PERIODS.values()))
+    return ihb, sd.seal(ihb), det["classification"]
+def measure_detail(s, v, **kw):
+    """Like measure() but also returns the per-channel drift statistics."""
+    ihb, seal, _ = measure(s, v, **kw); return ihb, seal, d.classify_drift(s, v, list(d.FACILITY_PERIODS.values()))
 def render(path):
     import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
     fig, ax = plt.subplots(figsize=(8, 8), facecolor="#0b1020"); ax.set_facecolor("#0b1020"); ax.axis("off")
@@ -30,13 +35,31 @@ def render(path):
         ax.plot([-2, 2], [0, 0], color=col, lw=1.2, alpha=.7) if k == 0 else None
         ax.plot([0, cx], [0, cy], color=col, lw=1.0)
     ax.set_aspect("equal"); fig.savefig(path, dpi=150, facecolor=fig.get_facecolor()); plt.close(fig)
-def build_release(out="release", root="."):
+def _load_signer():
+    """Signer from SENTINEL_DOT_SIGNING_KEY (PEM path); otherwise None (unsigned build)."""
+    import os
+    p = os.environ.get("SENTINEL_DOT_SIGNING_KEY")
+    if not p: return None
+    from sentinel_dot.signing import Signer
+    pw = os.environ.get("SENTINEL_DOT_SIGNING_PASSWORD"); return Signer.from_file(p, pw.encode() if pw else None)
+def _anchor(path):
+    """OpenTimestamps-stamp a file (pending proof). Requires `ots` and network; opt-in via BLUEPRINT_ANCHOR=1."""
+    import os, shutil as sh, subprocess
+    if os.environ.get("BLUEPRINT_ANCHOR") != "1" or not sh.which("ots"): return None
+    r = subprocess.run(["ots", "stamp", str(path)], capture_output=True, text=True, timeout=120)
+    return str(path)+".ots" if r.returncode == 0 else None
+def build_release(out="release", root=".", signer=None):
     out, root = pathlib.Path(out), pathlib.Path(root); out.mkdir(exist_ok=True)
     s, v = synthetic(); ihb, seal, cls = measure(s, v)
     render(out/"blueprint.jpeg"); img = (out/"blueprint.jpeg").read_bytes()
     (out/"invariant_hash_block.json").write_text(json.dumps(ihb, indent=2, sort_keys=True))
-    (out/"sentinel_sha256.txt").write_text(seal+"\n")
-    (out/"blueprint.svc").write_text(json.dumps(svc.build_svc(img, ihb, seal), indent=2))
+    (out/"sentinel_sha256.txt").write_text(seal+"\n")  # digest of canonical JSON, not file bytes
+    signer = signer or _load_signer(); sig = None
+    if signer is not None:
+        _, sig = sd.sign(ihb, signer)
+        (out/"sentinel_sig.txt").write_text(sig+"\n"); (out/"signer.pub").write_bytes(signer.public_pem())
+    (out/"blueprint.svc").write_text(json.dumps(svc.build_svc(img, ihb, seal, signature=sig,
+        public_key=signer.public_pem().decode() if signer else None), indent=2))
     src = root/"src/blueprint_invariant"
     for f in ("orrery.py", "daemon_gate.py"): shutil.copy(src/f, out/f)
     shutil.copytree(src, out/"src/blueprint_invariant", dirs_exist_ok=True,
@@ -52,8 +75,9 @@ def build_release(out="release", root="."):
     shutil.copy(root/"docs/compliance_report_template.json", out/"compliance_report_template.json")
     files = sorted(p for p in out.rglob("*") if p.is_file() and "__pycache__" not in p.parts and p.name not in ("manifest.json", "package_sha256.txt"))
     man = {str(p.relative_to(out)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
-    (out/"manifest.json").write_text(json.dumps({"version": "1.0.1", "classification": cls, "files": man}, indent=2))
+    (out/"manifest.json").write_text(json.dumps({"version": "1.0.2", "classification": cls, "files": man}, indent=2))
     pk = hashlib.sha256((out/"manifest.json").read_bytes()).hexdigest()
-    (out/"package_sha256.txt").write_text(pk+"\n"); return out, seal, pk, cls
+    (out/"package_sha256.txt").write_text(f"{pk}  manifest.json\n"); _anchor(out/"manifest.json")
+    return out, seal, pk, cls
 if __name__ == "__main__":
     o, s, p, c = build_release(); print(f"release={o} sentinel={s} package={p} classification={c}")
