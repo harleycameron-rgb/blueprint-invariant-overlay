@@ -1,10 +1,16 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
-title: Blueprint Invariant Overlay
-version: 1.0.2
-license: MIT
+title: "Blueprint Invariant Overlay"
+message: "If you use this project in your research, please cite it as below."
+type: software
 authors:
-  - family-names: Cameron
-    given-names: Harley
-    affiliation: "Welshpool, Wales, UK"
-# doi: add after Zenodo mints it
+  - family-names: "Cameron"
+    given-names: "Harley"
+    orcid: ""
+repository-code: "https://github.com/harleycameron-rgb/blueprint-invariant-overlay"
+license: "MIT"
+date-released: 2026-09-26
+keywords:
+  - invariant measurement
+  - measurement systems
+  - reproducible
+  - falsifiable

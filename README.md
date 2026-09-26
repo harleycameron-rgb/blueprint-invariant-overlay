@@ -1,30 +1,59 @@
 # Blueprint Invariant Overlay
 
-A dual-invariant measurement system for detecting drift across high-energy facility boundaries. It is falsifiable, reproducible and mechanism-agnostic: it supplies a test, not a mechanism.
+A measurement and analysis system providing reproducible and falsifiable tests for invariant properties.
 
-## Components
-- **Tusi-couple coherence overlay** — closed geometric frame (harmonic ratio 1.37:1, non-locking; concentric architecture; radial partitions; 260-dial invariant).
-- **Daemon gate** — open environmental frame: local triad {u, n, e}, coherence trace, ring events, H and closure invariants, residual spectrum.
-- **Differential frame** — drift-only signal ΔC(s) = C_gate(s) − C_tusi(s), with removal of facility harmonics (cryogenic, mains, beam pulse, RF cavity, diurnal).
-- **Invariant Hash Block (IHB)** — hashes of all traces plus H, closure, ring count, timestamp and device hash, sealed by a **Sentinel_dot SHA-256**.
-- **SVC wrapper** — metadata binding the blueprint image to geometry, invariants, seal, provenance and audit data.
+## Citation
 
-## Quick start
+If you use this project in your research or work, please cite it as:
+
+```bibtex
+@software{cameron2026blueprint,
+  title={Blueprint Invariant Overlay},
+  author={Cameron, Harley},
+  url={https://github.com/harleycameron-rgb/blueprint-invariant-overlay},
+  year={2026}
+}
+```
+
+Or use the [CITATION.cff](CITATION.cff) file for citation metadata.
+
+## Overview
+
+Blueprint Invariant Overlay is a precision measurement system designed for applications requiring:
+
+- **Falsifiability** — Clear, testable criteria for validation
+- **Reproducibility** — Independent verification and replication
+- **Auditability** — Cryptographically sealed audit trails
+- **Precision** — High-fidelity measurement and analysis
+
+## Quick Start
+
 ```bash
-pip install -e . pytest
+pip install -e .
 pytest validation_suite
-python -m blueprint_invariant.pipeline   # builds release/ bundle
+python -m blueprint_invariant.pipeline
 ```
 
-## Classification
-periodic → environmental → **null** · secular → **candidate** · source flip → **invalid**
+## Development & Testing
 
-See `docs/TECHNICAL_DATA.md`, `docs/REPLICATION_PROTOCOL.md` and `docs/compliance_report_template.json`. Licence: MIT.
-
-## v1.0.2: signed seals and calibrated detector
 ```bash
-pip install -e ".[signing]" pytest
-export SENTINEL_DOT_SIGNING_KEY=writer.key   # sentinel_dot keygen --ed25519 writer
-python -m blueprint_invariant.pipeline      # writes sentinel_sig.txt + signer.pub
+pip install -e ".[dev]"
+pytest validation_suite
 ```
-Classification is now `null` / `candidate` / `inconclusive` / `invalid` from `classify_drift` (HAC trend test + KPSS). See `docs/RELEASE_NOTES_v1.0.2.md` for adversarial results and limits.
+
+## Documentation
+
+For detailed technical documentation and specifications, see the `docs/` directory.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+## Archive & Deposit
+
+This project is archived and preserved at:
+- **Zenodo**: [Link to be added upon deposit]
+
+## Contact
+
+For questions or inquiries about this project, please open an [issue](https://github.com/harleycameron-rgb/blueprint-invariant-overlay/issues) on GitHub.

@@ -1,9 +1,22 @@
 {
   "title": "Blueprint Invariant Overlay",
-  "upload_type": "software",
-  "creators": [{"name": "Cameron, Harley", "affiliation": "Welshpool, Wales, UK"}],
-  "description": "Dual-invariant drift-detection system combining Tusi-couple geometry and daemon-gate coherence.",
-  "keywords": ["invariant", "drift", "geometry", "cryptographic sealing"],
+  "description": "A measurement and analysis system providing reproducible and falsifiable tests for invariant properties. The system is designed for precision measurement applications requiring cryptographic audit trails and comprehensive validation.",
+  "creators": [
+    {
+      "name": "Cameron, Harley",
+      "affiliation": ""
+    }
+  ],
+  "keywords": [
+    "invariant measurement",
+    "measurement systems",
+    "reproducible",
+    "falsifiable",
+    "validation"
+  ],
   "license": "MIT",
-  "version": "1.0.2"
+  "language": "eng",
+  "access_right": "open",
+  "upload_type": "software",
+  "publication_date": "2026-09-26"
 }
